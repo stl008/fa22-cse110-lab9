@@ -86,22 +86,97 @@
       <button>Trigger a Global Error</button>
     </section>
   </main>
-
+  
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "abbc37bf99a14845bf65b16c0447e2e6"
+      // for more configuration options, see https://docs.trackjs.com
+    });
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        let output = document.querySelector('output');
+        let firstNum = document.querySelector('#first-num').value;
+        let secondNum = document.querySelector('#second-num').value;
+        let operator = document.querySelector('#operator').value;
+        if(isNaN(firstNum) || isNaN(secondNum))
+        {
+          throw new ValueError("Invalid Input");
+        }
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch(err) {
+        TrackJS.track('Testing TrackJS!');
+        console.error(err.name);
+        console.error(err.message);
+      } finally {
+        console.log("finished running the try-catch block");
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    errorBtns[0].addEventListener("click", (event) => {
+      console.log(document.querySelector("output").innerHTML);
+    });
+    errorBtns[1].addEventListener("click", (event) => {
+      TrackJS.track('Testing TrackJS!');
+      console.error("Incorrect Usage");
+    });
+    errorBtns[2].addEventListener("click", (event) => {
+      console.count();
+    });
+    errorBtns[3].addEventListener("click", (event) => {
+      console.warn("Warning");
+    });
+    errorBtns[4].addEventListener("click", (event) => {
+      let firstNum = document.querySelector('#first-num').value;
+      let secondNum = document.querySelector('#second-num').value;
+      let reason = "The first number is not less than the second number"
+      console.assert(firstNum < secondNum, {firstNum, secondNum, reason});
+    });
+    errorBtns[5].addEventListener("click", (event) => {
+      console.clear();
+    });
+    errorBtns[6].addEventListener("click", (event) => {
+      console.dir(document.head);
+    });
+    errorBtns[7].addEventListener("click", (event) => {
+      console.dirxml(document);
+    });
+    errorBtns[8].addEventListener("click", (event) => {
+      console.group("Group");
+    });
+    errorBtns[9].addEventListener("click", (event) => {
+      console.groupEnd("Group");
+    });
+    errorBtns[10].addEventListener("click", (event) => {
+      let list = [{a:"Happy", b:"Yellow",},{a:"Melancholy", b:"Blue",}];
+      console.table(list);
+    });
+    errorBtns[11].addEventListener("click", (event) => {
+      console.time();
+    });
+    errorBtns[12].addEventListener("click", (event) => {
+      console.timeEnd();
+    });
+    errorBtns[13].addEventListener("click", (event) => {
+      console.trace();
+    });
+    errorBtns[14].addEventListener("click", (event) => {
+      TrackJS.track('Testing TrackJS!');
+      throw new SyntaxError("Error Trggrd");
+    });
+
+    class ValueError extends Error {
+      constructor(message) {
+        super(message); // (1)
+        this.name = "ValueError"; // (2)
+      }
+    }
   </script>
 </body>
 
